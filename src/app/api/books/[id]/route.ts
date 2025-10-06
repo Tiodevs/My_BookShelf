@@ -32,7 +32,8 @@ export async function GET(
 
 // PUT /api/books/:id - Atualizar um livro por ID
 export async function PUT(
-  request: NextRequest, { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -40,7 +41,8 @@ export async function PUT(
       return createErrorResponse("Não autorizado. Você não tem permissão para atualizar livros.", 403, "FORBIDDEN");
     }
 
-    const { id } = params;
+    const resolvedParams = await context.params;
+    const { id } = resolvedParams;
     const body = await request.json();
 
     // Validar os dados do corpo da requisição
@@ -67,7 +69,8 @@ export async function PUT(
 
 // DELETE /api/books/:id - Excluir um livro por ID
 export async function DELETE(
-  request: NextRequest, { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -75,7 +78,8 @@ export async function DELETE(
       return createErrorResponse("Não autorizado. Apenas administradores podem excluir livros.", 403, "FORBIDDEN");
     }
 
-    const { id } = params;
+    const resolvedParams = await context.params;
+    const { id } = resolvedParams;
 
     await prisma.book.delete({
       where: { id },

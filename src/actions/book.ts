@@ -6,7 +6,7 @@ import { bookFormSchema, booksSearchSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
 import { authConfig } from "@/lib/auth";
-import { ReadingStatus, Role, Prisma } from "@prisma/client";
+import { ReadingStatus, Role } from "@prisma/client";
 
 // Função para limpar e converter os dados do formulário validados
 const cleanDataForPrisma = (data: z.infer<typeof bookFormSchema>) => {
