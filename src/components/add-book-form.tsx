@@ -4,10 +4,10 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import Image from 'next/image';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -339,9 +339,11 @@ export default function AddBookForm({ genres }: AddBookFormProps) {
                 {coverUrl && (
                   <div className="flex flex-col items-center">
                     <p className="text-sm font-medium mb-2">Prévia da Capa</p>
-                    <img
+                    <Image
                       src={coverUrl}
                       alt="Capa do livro"
+                      width={160}
+                      height={240}
                       className="w-40 h-auto rounded-md shadow-md"
                     />
                   </div>

@@ -6,12 +6,12 @@ import { z } from "zod";
 import { toast } from "sonner";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from 'next/image';
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -410,9 +410,11 @@ export default function EditBookForm({ book }: Props) {
               {coverUrl && (
                 <div className="flex flex-col items-center">
                   <p className="text-sm font-medium mb-2">Prévia da Capa</p>
-                  <img
+                  <Image
                     src={coverUrl}
                     alt="Capa do livro"
+                    width={160}
+                    height={240}
                     className="w-40 h-auto rounded-md shadow-md"
                   />
                 </div>

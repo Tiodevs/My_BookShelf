@@ -1,7 +1,6 @@
 'use server';
 
 import { z } from "zod";
-import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { bookFormSchema, booksSearchSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
@@ -11,20 +10,16 @@ import { ReadingStatus, Role } from "@prisma/client";
 
 // Função para limpar os dados do formulário validados
 const cleanDataForPrisma = (data: z.infer<typeof bookFormSchema>) => {
-  const cleaned: any = {};
-  for (const key in data) {
-    const value = data[key as keyof typeof data];
-    if (value === '' || value === 'none') {
-      cleaned[key] = null;
-    } else {
-      cleaned[key] = value;
-    }
-  }
-  return cleaned;
+  return Object.fromEntries(
+    Object.entries(data).map(([key, value]) => [
+      key,
+      value === '' || value === 'none' ? null : value
+    ])
+  );
 };
 
 // Server Action para adicionar um livro
-export async function addBookAction(formData: any) {
+export async function addBookAction(formData: z.infer<typeof bookFormSchema>) {
   const session = await getServerSession(authConfig);
   if (!session?.user?.id) {
     return {
@@ -33,28 +28,19 @@ export async function addBookAction(formData: any) {
     };
   }
 
-  const validationResult = bookFormSchema.safeParse(formData);
-
-  if (!validationResult.success) {
-    return {
-      success: false,
-      errors: validationResult.error.flatten().fieldErrors,
-    };
-  }
-
-  const cleanedData = cleanDataForPrisma(validationResult.data);
+  const cleanedData = cleanDataForPrisma(formData);
 
   try {
     await prisma.book.create({
       data: {
         ...cleanedData,
-        userId: session.user.id, // Associar ao usuário logado
-      },
+        userId: session.user.id,
+      } as any,
     });
 
     revalidatePath('/books');
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error adding book:", error);
     return {
       success: false,
@@ -64,7 +50,7 @@ export async function addBookAction(formData: any) {
 }
 
 // Server Action para editar um livro
-export async function editBookAction(id: string, formData: any) {
+export async function editBookAction(id: string, formData: z.infer<typeof bookFormSchema>) {
   const session = await getServerSession(authConfig);
   if (!session?.user?.id) {
     return {
@@ -81,21 +67,12 @@ export async function editBookAction(id: string, formData: any) {
     };
   }
 
-  const validationResult = bookFormSchema.safeParse(formData);
-
-  if (!validationResult.success) {
-    return {
-      success: false,
-      errors: validationResult.error.flatten().fieldErrors,
-    };
-  }
-
-  const cleanedData = cleanDataForPrisma(validationResult.data);
+  const cleanedData = cleanDataForPrisma(formData);
 
   try {
     await prisma.book.update({
       where: { id }, // A verificação de permissão já foi feita
-      data: cleanedData,
+      data: cleanedData as any,
     });
 
     revalidatePath('/books');

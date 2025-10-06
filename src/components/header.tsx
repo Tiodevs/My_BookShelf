@@ -1,10 +1,10 @@
 'use client';
 
 import Link from "next/link";
-import { Book, Library } from "lucide-react"; // Re-adding original imports
+import { Library } from "lucide-react"; // Re-adding original imports
 import { ThemeSwitcher } from "./theme-switcher";
 import ClientOnly from "./client-only"; // Re-adding original imports
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { Button } from "./ui/button"; // Assuming this path is correct
 
 export default function Header() {

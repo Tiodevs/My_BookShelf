@@ -2,6 +2,7 @@
 
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
+import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -81,11 +82,11 @@ export default function SignInPage() {
 
           <div className="space-y-3">
             <Button variant="outline" className="w-full" onClick={() => signIn('google', { callbackUrl: '/dashboard' })}>
-              <img src="/globe.svg" alt="Google" className="h-5 w-5 mr-2" />
+              <Image src="/globe.svg" alt="Google" width={20} height={20} className="mr-2" />
               Entrar com Google
             </Button>
             <Button variant="outline" className="w-full" onClick={() => signIn('github', { callbackUrl: '/dashboard' })}>
-               <img src="/file.svg" alt="GitHub" className="h-5 w-5 mr-2" />
+               <Image src="/file.svg" alt="GitHub" width={20} height={20} className="mr-2" />
               Entrar com GitHub
             </Button>
           </div>

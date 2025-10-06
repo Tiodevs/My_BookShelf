@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import prisma from '@/lib/prisma'
 import { handleApiError, createSuccessResponse, createErrorResponse } from '@/lib/api-utils'
-import { updateBookSchema, UpdateBookInput } from '@/lib/validations'
+import { updateBookSchema } from '@/lib/validations'
 import { auth } from "@/lib/auth"; // Importar auth
 import { Role } from "@prisma/client"; // Importar Role
 
