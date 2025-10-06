@@ -6,16 +6,21 @@ import { bookFormSchema, booksSearchSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
 import { authConfig } from "@/lib/auth";
-import { ReadingStatus, Role } from "@prisma/client";
+import { ReadingStatus, Role, Prisma } from "@prisma/client";
 
-// Função para limpar os dados do formulário validados
+// Função para limpar e converter os dados do formulário validados
 const cleanDataForPrisma = (data: z.infer<typeof bookFormSchema>) => {
-  return Object.fromEntries(
-    Object.entries(data).map(([key, value]) => [
-      key,
-      value === '' || value === 'none' ? null : value
-    ])
-  );
+  return {
+    pages: data.pages || null,
+    year: data.year || null,
+    currentPage: data.currentPage || null,
+    status: data.status === '' || data.status === 'none' ? null : (data.status as ReadingStatus | null),
+    isbn: data.isbn === '' || data.isbn === 'none' ? null : data.isbn,
+    cover: data.cover === '' || data.cover === 'none' ? null : data.cover,
+    genreId: data.genreId === '' || data.genreId === 'none' ? null : data.genreId,
+    rating: data.rating === '' || data.rating === 'none' ? null : data.rating,
+    synopsis: data.synopsis === '' || data.synopsis === 'none' ? null : data.synopsis,
+  };
 };
 
 // Server Action para adicionar um livro
@@ -33,9 +38,19 @@ export async function addBookAction(formData: z.infer<typeof bookFormSchema>) {
   try {
     await prisma.book.create({
       data: {
-        ...cleanedData,
+        title: formData.title,
+        author: formData.author,
+        pages: cleanedData.pages,
+        year: cleanedData.year,
+        currentPage: cleanedData.currentPage,
+        status: cleanedData.status as ReadingStatus | null,
+        isbn: cleanedData.isbn,
+        cover: cleanedData.cover,
+        genreId: cleanedData.genreId,
+        rating: cleanedData.rating,
+        synopsis: cleanedData.synopsis,
         userId: session.user.id,
-      } as any,
+      },
     });
 
     revalidatePath('/books');
@@ -72,7 +87,19 @@ export async function editBookAction(id: string, formData: z.infer<typeof bookFo
   try {
     await prisma.book.update({
       where: { id }, // A verificação de permissão já foi feita
-      data: cleanedData as any,
+      data: {
+        title: formData.title,
+        author: formData.author,
+        pages: cleanedData.pages,
+        year: cleanedData.year,
+        currentPage: cleanedData.currentPage,
+        status: cleanedData.status as ReadingStatus | null,
+        isbn: cleanedData.isbn,
+        cover: cleanedData.cover,
+        genreId: cleanedData.genreId,
+        rating: cleanedData.rating,
+        synopsis: cleanedData.synopsis,
+      },
     });
 
     revalidatePath('/books');

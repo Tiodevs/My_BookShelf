@@ -175,7 +175,7 @@ export default function AddBookForm({ genres }: AddBookFormProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Gênero</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Selecione um gênero" />
@@ -201,7 +201,7 @@ export default function AddBookForm({ genres }: AddBookFormProps) {
                       <FormItem>
                         <FormLabel>Ano de Publicação</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="Ex: 2023" {...field} value={field.value === undefined || field.value === null ? "" : field.value} />
+                          <Input type="number" placeholder="Ex: 2023" {...field} value={field.value === undefined || field.value === null || field.value === "" ? "" : String(field.value)} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -215,7 +215,7 @@ export default function AddBookForm({ genres }: AddBookFormProps) {
                     <FormItem>
                       <FormLabel>Total de páginas</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="Ex: 350" {...field} value={field.value === undefined || field.value === null ? "" : field.value} />
+                        <Input type="number" placeholder="Ex: 350" {...field} value={field.value === undefined || field.value === null || field.value === "" ? "" : String(field.value)} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -254,7 +254,7 @@ export default function AddBookForm({ genres }: AddBookFormProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Status de Leitura</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Selecione um status" />
@@ -280,8 +280,14 @@ export default function AddBookForm({ genres }: AddBookFormProps) {
                       <FormItem>
                         <FormLabel>Avaliação</FormLabel>
                         <Select 
-                          onValueChange={field.onChange}
-                          value={field.value}
+                          onValueChange={(value) => {
+                            if (value === "none" || value === "") {
+                              field.onChange(undefined);
+                            } else {
+                              field.onChange(Number(value));
+                            }
+                          }}
+                          value={field.value?.toString() || ""}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -309,7 +315,7 @@ export default function AddBookForm({ genres }: AddBookFormProps) {
                     <FormItem>
                       <FormLabel>Página atual</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="Página que você está lendo" {...field} value={field.value === undefined || field.value === null ? "" : field.value} />
+                        <Input type="number" placeholder="Página que você está lendo" {...field} value={field.value === undefined || field.value === null || field.value === "" ? "" : String(field.value)} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
