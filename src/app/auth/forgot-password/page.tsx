@@ -22,7 +22,7 @@ export default function ForgotPasswordPage() {
     if (!result.success) {
       setErrors(result.errors || { _server: ["Ocorreu um erro desconhecido."] });
     } else {
-      setMessage(result.message);
+      setMessage(result.message ?? null);
     }
   };
 

@@ -2,9 +2,9 @@
 "use client"; // This is a client component
 
 import { useSearchParams } from "next/navigation";
-import React from "react";
+import React, { Suspense } from "react";
 
-export default function ErrorPage() {
+function ErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
 
@@ -36,5 +36,13 @@ export default function ErrorPage() {
         <a href="/auth/signin">Voltar para o Login</a>
       </p>
     </div>
+  );
+}
+
+export default function ErrorPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: "20px", textAlign: "center" }}>Carregando...</div>}>
+      <ErrorContent />
+    </Suspense>
   );
 }

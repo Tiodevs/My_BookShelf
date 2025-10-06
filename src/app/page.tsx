@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { LogIn, UserPlus } from "lucide-react";
 import React from "react";
 
-export default function HomePage(): JSX.Element {
+export default function HomePage() {
   return (
     <main className="relative flex items-center justify-center h-screen w-screen overflow-hidden
       bg-gradient-to-br from-[#9b5de5]/90 to-[#7b1fa2]/90">

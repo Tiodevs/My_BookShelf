@@ -38,9 +38,9 @@ export default function RegisterPage() {
     if (!result.success) {
       setErrors(result.errors || { _server: ["Ocorreu um erro desconhecido."] });
     } else {
-      setMessage(result.message);
+      setMessage(result.message || "Registro realizado com sucesso!");
       setTimeout(() => {
-        router.push('/auth/signin');
+        router.push('/auth/check-email');
       }, 2000); // Redirect after 2 seconds
     }
   };

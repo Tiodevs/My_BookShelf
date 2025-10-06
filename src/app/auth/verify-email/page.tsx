@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { verifyEmail } from '@/actions/auth';
 import Link from 'next/link';
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const [verificationStatus, setVerificationStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState<string | null>(null);
@@ -18,7 +18,7 @@ export default function VerifyEmailPage() {
         const result = await verifyEmail(token);
         if (result.success) {
           setVerificationStatus('success');
-          setMessage(result.message);
+          setMessage(result.message || "Seu email foi verificado com sucesso!");
         } else {
           setVerificationStatus('error');
           setMessage(result.errors?._server?.[0] || "Ocorreu um erro ao verificar seu email.");
@@ -51,5 +51,20 @@ export default function VerifyEmailPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold text-center text-gray-900">Verificação de Email</h2>
+          <p className="text-center text-gray-700">Carregando...</p>
+        </div>
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }

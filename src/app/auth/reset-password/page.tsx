@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { resetPassword } from '@/actions/auth';
 import Link from 'next/link';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [token, setToken] = useState<string | null>(null);
@@ -51,7 +51,7 @@ export default function ResetPasswordPage() {
     if (!result.success) {
       setErrors(result.errors || { _server: ["Ocorreu um erro desconhecido."] });
     } else {
-      setMessage(result.message);
+      setMessage(result.message || "Sua senha foi redefinida com sucesso!");
       // Redirect to login page after successful password reset
       router.push('/auth/signin');
     }
@@ -122,5 +122,17 @@ export default function ResetPasswordPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <p className="text-gray-700">Carregando...</p>
+      </div>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

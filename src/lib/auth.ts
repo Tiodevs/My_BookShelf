@@ -4,6 +4,8 @@ import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+
+import { Adapter } from "next-auth/adapters";
 import prisma from "./prisma";
 import * as bcrypt from "bcryptjs";
 
@@ -26,8 +28,72 @@ declare module "next-auth/jwt" {
   }
 }
 
+declare module "next-auth/adapters" {
+  interface AdapterUser {
+    role: string;
+  }
+}
+
+// Custom adapter that extends PrismaAdapter to include the role field
+function CustomPrismaAdapter(p: typeof prisma): Adapter {
+  return {
+    ...PrismaAdapter(p),
+    async createUser(data: { name?: string | null; email: string; emailVerified?: Date | null; image?: string | null }) {
+      const user = await p.user.create({
+        data: {
+          ...data,
+          role: "USER",
+        },
+      });
+      return {
+        ...user,
+        role: user.role,
+        emailVerified: user.emailVerified ?? null,
+      };
+    },
+    async getUser(id: string) {
+      const user = await p.user.findUnique({ where: { id } });
+      if (!user) return null;
+      return {
+        ...user,
+        role: user.role,
+        emailVerified: user.emailVerified ?? null,
+      };
+    },
+    async getUserByEmail(email: string) {
+      const user = await p.user.findUnique({ where: { email } });
+      if (!user) return null;
+      return {
+        ...user,
+        role: user.role,
+        emailVerified: user.emailVerified ?? null,
+      };
+    },
+    async getUserByAccount({ providerAccountId, provider }: { providerAccountId: string; provider: string }) {
+      const account = await p.account.findUnique({
+        where: { provider_providerAccountId: { provider, providerAccountId } },
+        include: { user: true },
+      });
+      if (!account) return null;
+      return {
+        ...account.user,
+        role: account.user.role,
+        emailVerified: account.user.emailVerified ?? null,
+      };
+    },
+    async updateUser({ id, ...data }: { id: string; name?: string | null; email?: string | null; emailVerified?: Date | null; image?: string | null }) {
+      const user = await p.user.update({ where: { id }, data });
+      return {
+        ...user,
+        role: user.role,
+        emailVerified: user.emailVerified ?? null,
+      };
+    },
+  } as Adapter;
+}
+
 export const authConfig: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: CustomPrismaAdapter(prisma),
   providers: [
     GitHub({
       clientId: process.env.GITHUB_ID!,

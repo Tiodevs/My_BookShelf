@@ -4,8 +4,7 @@ import { z } from 'zod';
 import prisma from '@/lib/prisma';
 import * as bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import { sendEmail } from '@/lib/email'; // Importar sendEmail
-import { redirect } from 'next/navigation'; // Importar redirect
+import { sendEmail } from '@/lib/email';
 
 // Define a schema for registration input
 const registerSchema = z.object({
@@ -79,10 +78,6 @@ export async function registerUser(formData: FormData) {
     });
 
   } catch (error) {
-    // Adicionar verificação para não tratar o erro de redirect como um erro de registro
-    if (error instanceof Error && error.message.includes('NEXT_REDIRECT')) {
-      throw error;
-    }
     console.error("Error registering user:", error);
     return {
       success: false,
@@ -90,8 +85,10 @@ export async function registerUser(formData: FormData) {
     };
   }
 
-  // Redirecionar após o sucesso de todas as operações no bloco try
-  redirect('/auth/check-email');
+  return {
+    success: true,
+    message: "Registro realizado com sucesso! Verifique seu email para confirmar sua conta.",
+  };
 }
 
 // Function to generate a random token
