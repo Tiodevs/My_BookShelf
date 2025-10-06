@@ -1,0 +1,109 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var( --radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root { /* Light Theme */
+  --radius: 0.625rem;
+  --background: #FFFFFF;
+  --foreground: #12121E;
+
+  --card: #FFFFFF;
+  --card-foreground: #12121E;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #12121E;
+
+  --primary: #6200EE;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #FFFFFF;
+  --secondary-foreground: #12121E;
+
+  --muted: #F0F0F0;
+  --muted-foreground: #606060;
+
+  --accent: #6200EE;
+  --accent-foreground: #FFFFFF;
+
+  --destructive: #B00020;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #E0E0E0;
+  --input: #E0E0E0;
+  --ring: #6200EE;
+}
+
+.dark { /* Dark Theme */
+  --background: #0D0210;
+  --foreground: #E0E0E0;
+
+  --card: #1D1D2B;
+  --card-foreground: #E0E0E0;
+
+  --popover: #1D1D2B;
+  --popover-foreground: #E0E0E0;
+
+  --primary: #BB86FC;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #1D1D2B;
+  --secondary-foreground: #E0E0E0;
+
+  --muted: #1D1D2B;
+  --muted-foreground: #A0A0A0;
+
+  --accent: #A779FF;
+  --accent-foreground: #FFFFFF;
+
+  --destructive: #DC3545;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #303030;
+  --input: #303030;
+  --ring: #A779FF;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Fix for browser autofill styles */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--foreground) !important;
+  -webkit-box-shadow: 0 0 0 30px var(--background) inset !important;
+  box-shadow: 0 0 0 30px var(--background) inset !important;
+}

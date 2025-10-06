@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+}
+
+// Enum para o status de leitura
+enum ReadingStatus {
+  QUERO_LER
+  LENDO
+  LIDO
+  PAUSADO
+  ABANDONADO
+}
+
+// Enum para papéis de usuário
+enum Role {
+  USER
+  ADMIN
+}
+
+// Modelo de Livro
+model Book {
+  id          String         @id @default(uuid())
+  title       String
+  author      String
+  year        Int?
+  pages       Int?
+  currentPage Int?
+  rating      Int?
+  synopsis    String?
+  cover       String?
+  status      ReadingStatus?
+  isbn        String?
+
+  genreId     String?
+  genre       Genre?       @relation(fields: [genreId], references: [id])
+
+  // Relação com User
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Genre {
+  id          String         @id @default(uuid())
+  name        String
+  books       Book[]
+}
+
+// NextAuth.js models
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(USER) // Added role field
+  accounts      Account[]
+  sessions      Session[]
+  resetTokens   PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[] // Added this line
+
+  // Relação com Book
+  books         Book[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Model for password reset tokens
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expires   DateTime
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Model for email verification tokens
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expires   DateTime
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Comandos do prisma
+// npx prisma migrate dev --name init
+// npx prisma db seed
+// npx prisma generate
+// npx prisma studio
