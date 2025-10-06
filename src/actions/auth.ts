@@ -65,6 +65,12 @@ export async function registerUser(formData: FormData) {
     });
 
     const verificationLink = `${process.env.NEXTAUTH_URL}/auth/verify-email?token=${verificationToken}`;
+    
+    // Verificar se o email não é null antes de enviar
+    if (!newUser.email) {
+      throw new Error("Email do usuário não encontrado");
+    }
+    
     await sendEmail({
       to: newUser.email,
       subject: 'Verifique seu Email',
@@ -139,6 +145,15 @@ export async function requestPasswordReset(formData: FormData) {
 
     // --- Send email ---
     const resetLink = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`;
+    
+    // Verificar se o email não é null antes de enviar
+    if (!user.email) {
+      return {
+        success: false,
+        errors: { _server: ["Email do usuário não encontrado."] },
+      };
+    }
+    
     await sendEmail({
       to: user.email,
       subject: 'Redefinição de Senha',
@@ -171,7 +186,7 @@ export async function resetPassword(formData: FormData) {
   if (!validationResult.success) {
     return {
       success: false,
-      errors: { password: validationResult.error.flatten().fieldErrors.password },
+      errors: { password: validationResult.error.flatten().formErrors },
     };
   }
 
