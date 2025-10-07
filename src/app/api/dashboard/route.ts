@@ -1,13 +1,23 @@
 import { PrismaClient, ReadingStatus } from '@prisma/client'
-import { handleApiError, createSuccessResponse } from '@/lib/api-utils'
+import { handleApiError, createSuccessResponse, createErrorResponse } from '@/lib/api-utils'
+import { getServerSession } from "next-auth/next";
+import { authConfig } from "@/lib/auth";
 
 const prisma = new PrismaClient()
 
 // GET /api/dashboard - Obter estatísticas do dashboard
 export async function GET() {
   try {
-    // Buscar todos os livros com seus dados
+    const session = await getServerSession(authConfig);
+    if (!session?.user?.id) {
+      return createErrorResponse("Não autorizado", 401);
+    }
+
+    // Buscar apenas livros do usuário logado
     const books = await prisma.book.findMany({
+      where: {
+        userId: session.user.id, // Filtrar apenas livros do usuário logado
+      },
       include: {
         genre: true
       }

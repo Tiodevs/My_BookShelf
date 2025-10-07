@@ -8,9 +8,31 @@ import {
 import { BookOpen, CheckCircle2, FileText, Library } from "lucide-react";
 import GenreChart from '@/components/genre-chart';
 import { cn } from '@/lib/utils';
+import { getServerSession } from "next-auth/next";
+import { authConfig } from "@/lib/auth";
 
 async function getDashboardData() {
+  const session = await getServerSession(authConfig);
+  if (!session?.user?.id) {
+    return {
+      overview: {
+        totalBooks: 0,
+        readingNow: 0,
+        finishedBooks: 0,
+        wantToRead: 0,
+        paused: 0,
+        abandoned: 0,
+        totalPagesRead: 0,
+        averageProgress: 0,
+      },
+      genreData: [],
+    };
+  }
+
   const books = await prisma.book.findMany({
+    where: {
+      userId: session.user.id, // Filtrar apenas livros do usuário logado
+    },
     include: {
       genre: true,
     },
