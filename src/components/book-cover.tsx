@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface Props {
@@ -9,16 +9,34 @@ interface Props {
 }
 
 export default function BookCover({ src, alt }: Props) {
-  const [imgSrc, setImgSrc] = useState(src || '/file.svg');
+  const [imgSrc, setImgSrc] = useState('/file.svg');
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    if (src && src.trim() !== '') {
+      setImgSrc(src);
+      setHasError(false);
+    } else {
+      setImgSrc('/file.svg');
+    }
+  }, [src]);
+
+  const handleError = () => {
+    setHasError(true);
+    setImgSrc('/file.svg');
+  };
 
   return (
-    <Image 
-      src={imgSrc}
-      alt={alt}
-      width={200}
-      height={300}
-      className="w-full h-auto rounded-md object-cover"
-      onError={() => setImgSrc('/file.svg')}
-    />
+    <div className="w-full h-[300px] bg-muted rounded-md flex items-center justify-center overflow-hidden">
+      <Image 
+        src={imgSrc}
+        alt={alt}
+        width={200}
+        height={300}
+        className="w-full h-full object-cover"
+        onError={handleError}
+        unoptimized={src?.includes('amazon') || src?.includes('google')}
+      />
+    </div>
   );
 }

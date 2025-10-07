@@ -22,7 +22,15 @@ export const bookFormSchema = z.object({
   currentPage: z.coerce.number().int().min(0, "A página atual não pode ser negativa.").optional().or(z.literal('')),
   status: ReadingStatusEnum.optional().or(z.literal('none')).or(z.literal('')),
   isbn: z.string().optional(),
-  cover: z.string().url("A URL da capa deve ser válida.").or(z.literal('')).optional(),
+  cover: z.string().optional().refine((val) => {
+    if (!val || val === '') return true;
+    try {
+      new URL(val);
+      return true;
+    } catch {
+      return false;
+    }
+  }, "A URL da capa deve ser válida."),
   genreId: z.string().optional().or(z.literal('none')).or(z.literal('')),
   rating: z.coerce.number().int().min(1).max(5).optional().or(z.literal('none')).or(z.literal('')),
   synopsis: z.string().optional(),
